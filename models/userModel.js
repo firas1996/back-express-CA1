@@ -14,6 +14,35 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     //uppercase:true,
   },
+  password: {
+    type: String,
+    required: [true, "The password is required !!!"],
+    minlength: 8,
+  },
+  confirm_password: {
+    type: String,
+    required: [true, "The password is required !!!"],
+    minlength: 8,
+    validate: {
+      validator: function (confPass) {
+        return confPass === this.password;
+      },
+      message: "Password and Confirm Password does not match !!!!",
+    },
+  },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
+  created_at: {
+    type: Date,
+    default: Date.now(),
+  },
+  last_pass_date_change: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 const User = mongoose.model("User", userSchema);
