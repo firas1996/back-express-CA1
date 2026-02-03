@@ -65,6 +65,11 @@ exports.updateUserById = async (req, res) => {
 
 exports.deleteUserById = async (req, res) => {
   try {
+    if (!(await User.findById(req.params.id))) {
+      res.status(203).json({
+        message: "User does not exist !!!",
+      });
+    }
     await User.findByIdAndDelete(req.params.id);
     res.status(203).json({
       message: "User Deleted !!!",
