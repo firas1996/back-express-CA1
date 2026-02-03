@@ -12,7 +12,7 @@ mongoose
     console.log("Error: " + e);
   });
 const app = express();
-app.use(userRoutes);
+app.use("/users", userRoutes);
 const port = 1122;
 app.listen(port, () => {
   console.log("The server is running !!!!");

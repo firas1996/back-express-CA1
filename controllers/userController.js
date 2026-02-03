@@ -1,8 +1,8 @@
 const User = require("../models/userModel");
 
-exports.createUser = (req, res) => {
+exports.createUser = async (req, res) => {
   try {
-    const newUser = User.create(req.body);
+    const newUser = await User.create(req.body);
     res.status(201).json({
       message: "User createdd !!!",
       data: newUser,
