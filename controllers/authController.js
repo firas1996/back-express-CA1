@@ -48,6 +48,21 @@ exports.login = async (req, res) => {
         message: "Email and password are required !!!!",
       });
     }
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(400).json({
+        message: "Email or password are incorrect !!!!",
+      });
+    }
+    if (!(await user.comparePassword(password, user.password))) {
+      res.status(400).json({
+        message: "Email or password are incorrect !!!!",
+      });
+    }
+
+    res.status(201).json({
+      message: "Logged in !!!",
+    });
   } catch (error) {
     res.status(400).json({
       message: "Error",
