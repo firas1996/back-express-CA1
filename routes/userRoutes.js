@@ -6,7 +6,7 @@ const {
   updateUserById,
   deleteUserById,
 } = require("../controllers/userController");
-const { signUp, login } = require("../controllers/authController");
+const { signUp, login, protectorMW } = require("../controllers/authController");
 const router = express.Router();
 
 router.post("/signup", signUp);
@@ -14,7 +14,7 @@ router.post("/login", login);
 
 // ********************************************************** //
 router.post("/createUser", createUser);
-router.get("/getUsers", getUsers);
+router.get("/getUsers", protectorMW, getUsers);
 router.get("/getUser/:id", getUserById);
 router.patch("/updateUser/:id", updateUserById);
 router.delete("/deleteUser/:id", deleteUserById);

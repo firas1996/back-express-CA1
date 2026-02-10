@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
 
 const createToken = (id, name) => {
   return jwt.sign({ id, name, test: "Hello !" }, process.env.JWT_SECRET, {
@@ -73,6 +74,57 @@ exports.login = async (req, res) => {
       message: "Logged in !!!",
       token: token,
     });
+  } catch (error) {
+    res.status(400).json({
+      message: "Error",
+      error: error,
+    });
+  }
+};
+
+exports.protectorMW = async (req, res, next) => {
+  try {
+    let token;
+    // 1) bech t'thabat ken el user 3andou token or not
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+    if (!token) {
+      res.status(401).json({
+        message: "You are not logged in !!!!",
+      });
+    }
+
+    // 2) thabat fel validité mta3 el token
+
+    const validToken = await promisify(jwt.verify)(
+      token,
+      process.env.JWT_SECRET,
+    );
+    console.log(validToken.iat);
+    // 3) chouf si el user moula el token mizel mawjoud wala tfasa5
+
+    const user = await User.findById(validToken.id);
+    if (!user) {
+      res.status(404).json({
+        message: "User not found !!!!",
+      });
+    }
+    console.log(parseInt(user.last_pass_date_change.getTime() / 1000));
+
+    // 4) bech nthabtou ken el token tsan3et 9bal last pass change
+    if (
+      validToken.iat < parseInt(user.last_pass_date_change.getTime() / 1000)
+    ) {
+      res.status(404).json({
+        message: "Token no longer valid !!!!",
+      });
+    }
+
+    next();
   } catch (error) {
     res.status(400).json({
       message: "Error",
